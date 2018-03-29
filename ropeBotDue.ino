@@ -8,35 +8,7 @@
 //  * Two motors through Sparkfun HBridge breakout board for the bots 
 //  * Communicates with Raspberry Pi which manages the race and displays results.
 
-// Player One button and end stop pins
-const int PLAYER_0_DOWN = 10;
-const int PLAYER_0_UP = 11;
-const int PLAYER_0_TOP = 14;
-const int PLAYER_0_BOTTOM = 15;
-
-// Start button pin
-const int START_BUTTON = 16;
-
-// Player TWO button and end stop pins
-const int PLAYER_1_DOWN = 12;
-const int PLAYER_1_UP = 13;
-const int PLAYER_1_TOP = 17;
-const int PLAYER_1_BOTTOM = 18;
-
-//Raspberry Pi pins
-const int COUNTDOWN_OUT = 51 ;
-const int GO_IN = 53;
-const int PLAYER_0_OUT = 49;
-const int PLAYER_1_OUT = 47;
-
-// Motor pins
-const int PWMB = 2;
-const int BIN2 = 3;
-const int BIN1 = 4;
-const int STBY = 5;
-const int AIN1 = 6;
-const int AIN2 = 7;
-const int PWMA = 8;
+#include "pins.h"
 
 enum PlayerState {
 	offmark,
@@ -71,7 +43,7 @@ void setup() {
 	initializePlayers();
 	pinMode( START_BUTTON, INPUT );
 	pinMode( COUNTDOWN_OUT, OUTPUT );
-	pinMode( GO_IN, INPUT );
+	pinMode( BEGIN_IN, INPUT );
 	
 	startTime = millis();
 	Serial.begin(9600);
@@ -80,7 +52,7 @@ void setup() {
 		digitalWrite( COUNTDOWN_OUT, HIGH );
 		delay(300);
 		digitalWrite( COUNTDOWN_OUT, LOW );
-		delay(150);
+		delay(300);
 	}
 
 	Serial.println("Start up");
@@ -183,7 +155,7 @@ void setRaceState() {
 			}
 			break;
 		case countDown:
-			if( digitalRead( GO_IN ) == HIGH ) {
+			if( digitalRead( BEGIN_IN ) == HIGH ) {
 				raceState = begun;
 			} else {
 				for( int i = 0; i < playerCount; i++) {
