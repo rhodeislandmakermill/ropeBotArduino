@@ -223,9 +223,6 @@ void setRaceState() {
 }
 
 void debug(long interval) {
-	if( digitalRead(players[0].topPin) == HIGH ) {
-		Serial.println("0 TOP");
-	}
 	for( int i = 0; i < playerCount; i++) {
 		if( players[i].state != players[i].lastState ) {
 			Serial.print("Player ");
