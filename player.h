@@ -10,7 +10,8 @@ class Player {
 			halfway,
 			finished
 		};
-	
+
+		Player();
 		Player(int top, int bottom, int out, int up, int down );
 		void updateState( bool raceBegun );
 		

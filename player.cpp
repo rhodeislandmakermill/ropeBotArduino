@@ -1,6 +1,18 @@
 #include "player.h"
 #include "Arduino.h"
 
+Player::Player() {
+	//Set pins variables
+	topStopPin = -1;
+	bottomStopPin = -1;
+	outPin = -1;
+	upButtonPin = -1;
+	downButtonPin = -1;
+
+	//Default player to offmark state
+	state = offmark;
+}
+
 Player::Player(int top, int bottom, int out, int up, int down ) {
 	//Set pins variables
 	topStopPin = top;

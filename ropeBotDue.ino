@@ -9,6 +9,7 @@
 //  * Communicates with Raspberry Pi which manages the race and displays results.
 
 #include "pins.h"
+#include "player.h"
 
 enum PlayerState {
 	offmark,
@@ -18,7 +19,9 @@ enum PlayerState {
 	finished
 };
 
-struct Player {
+Player* playerObjects;
+
+struct PlayerStruct {
 	PlayerState state;
 	PlayerState lastState;
 	int topPin;
@@ -41,6 +44,10 @@ long startTime;
 
 void setup() {
 	initializePlayers();
+
+	playerObjects = new Player[2];
+
+	
 	pinMode( START_BUTTON, INPUT );
 	pinMode( COUNTDOWN_OUT, OUTPUT );
 	pinMode( BEGIN_IN, INPUT );
