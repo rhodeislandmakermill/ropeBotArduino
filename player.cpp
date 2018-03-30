@@ -60,6 +60,10 @@ void Player::updateState( bool raceBegun ) {
 	}
 }
 
+bool Player::onMark() {
+	return state == onmark;
+}
+
 
 // PRIVATE FUNCTIONS
 
