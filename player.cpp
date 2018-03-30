@@ -16,6 +16,38 @@ Player::Player(int top, int bottom, int out, int up, int down ) {
 	state = offmark;
 }
 
+void Player::updateState( bool raceBegun ) {
+		switch( state ) {
+		case offmark:
+			if( digitalRead(bottomStopPin) == HIGH ) {	
+				state = onmark;
+			}
+			break;
+		case onmark:
+			if( digitalRead(bottomStopPin) == LOW ) {
+				if( raceBegun == false ) {
+					state = offmark;	
+				} else {
+					state = started;
+				}
+			}			
+			break;			
+		case started:
+			if( digitalRead(topStopPin) == HIGH ) {
+				state = halfway;
+			}
+			break;
+		case halfway:
+			if( digitalRead(bottomStopPin) == HIGH ) {
+				state = finished;
+			}
+			break;
+		case finished:
+			// Just a place holder... players are reset externally
+			break;
+	}
+}
+
 
 // PRIVATE FUNCTIONS
 
