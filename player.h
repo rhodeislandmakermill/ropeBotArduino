@@ -21,6 +21,8 @@ class Player {
 		int upButtonPin;
 		int downButtonPin;
 		PlayerState state;
+
+		void initializePins();
 };
 
 #endif
