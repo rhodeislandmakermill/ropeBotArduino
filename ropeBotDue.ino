@@ -46,6 +46,7 @@ long startTime;
 void setup() {
 	initializePlayers();
 
+
 	players[0] = new Player(PLAYER_0_TOP, PLAYER_0_BOTTOM, PLAYER_0_OUT, PLAYER_0_UP, PLAYER_0_DOWN );
 	players[1] = new Player(PLAYER_1_TOP, PLAYER_1_BOTTOM, PLAYER_1_OUT, PLAYER_1_UP, PLAYER_1_DOWN );
 	
@@ -76,7 +77,7 @@ void loop() {
 	}
 	
 	for( int i = 0; i < playerCount; i++) {
-		players[i].updateState( raceBegun )
+		players[i]->updateState( raceBegun );
 	}
 	
 	setRaceState();
