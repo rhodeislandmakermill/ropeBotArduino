@@ -1,5 +1,5 @@
-#ifndef _PINS_H
-#define _PINS_H
+#ifndef PINS_H
+#define PINS_H
 
 //Race end stops
 const int PLAYER_0_TOP = 14;
