@@ -11,24 +11,8 @@
 #include "pins.h"
 #include "player.h"
 
-enum PlayerState {
-	offmark,
-	set,
-	started,
-	halfway,
-	finished
-};
-
 const int playerCount = 2;
 Player* players[playerCount];
-
-struct PlayerStruct {
-	PlayerState state;
-	PlayerState lastState;
-	int topPin;
-	int bottomPin;
-	int outPin;
-} playersStruct[2];
 
 enum RaceState {
 	initiating,
@@ -39,13 +23,9 @@ enum RaceState {
 	complete
 } raceState, lastRaceState;
 
-int playerStructCount;
 long startTime;
 
-
 void setup() {
-	initializePlayers();
-
 
 	players[0] = new Player(PLAYER_0_TOP, PLAYER_0_BOTTOM, PLAYER_0_OUT, PLAYER_0_UP, PLAYER_0_DOWN );
 	players[1] = new Player(PLAYER_1_TOP, PLAYER_1_BOTTOM, PLAYER_1_OUT, PLAYER_1_UP, PLAYER_1_DOWN );
@@ -68,7 +48,6 @@ void setup() {
 }
 
 void loop() {
-	setPlayerState();
 
 	//Update player state
 	bool raceBegun = true;
@@ -84,64 +63,16 @@ void loop() {
 	debug(500);
 }
 
-void initializePlayers() {	
-	playersStruct[0] = {offmark, offmark, PLAYER_0_TOP, PLAYER_0_BOTTOM, PLAYER_0_OUT };
-	playersStruct[1] = {offmark, offmark, PLAYER_1_TOP, PLAYER_1_BOTTOM, PLAYER_1_OUT };
-
-	playerStructCount = sizeof(playersStruct) / sizeof(playersStruct[0]);
-
-	for(int i = 0; i < playerStructCount; i++) {
-		pinMode( playersStruct[i].topPin, INPUT);
-		pinMode( playersStruct[i].bottomPin, INPUT);
-		pinMode( playersStruct[i].outPin, OUTPUT);
-	}
-}
-
 void resetRace() {
 	//RESET PLAYERS
-	for( int i = 0; i < playerStructCount; i++) {
-		playersStruct[i].state = offmark;
-		digitalWrite( playersStruct[i].outPin, LOW);
+	for( int i = 0; i < playerCount; i++) {
+		players[i]->reset();
 	}
 
 	//RESET RACE
 	digitalWrite( COUNTDOWN_OUT, LOW);
 	raceState = initiating;
 	lastRaceState = raceState;
-}
-
-void setPlayerState() {
-	for( int i = 0; i < playerStructCount; i++) {
-		switch( playersStruct[i].state ) {
-			case offmark:
-				if( digitalRead( playersStruct[i].bottomPin) == HIGH ) {	
-					playersStruct[i].state = set;
-				}
-				break;
-			case set:
-				if( digitalRead( playersStruct[i].bottomPin) == LOW ) {
-					if( raceState == initiating || raceState == playersSet ) {
-						playersStruct[i].state = offmark;	
-					} else {
-						playersStruct[i].state = started;
-					}
-				}			
-				break;			
-			case started:
-				if( digitalRead( playersStruct[i].topPin) == HIGH ) {
-					playersStruct[i].state = halfway;
-				}
-				break;
-			case halfway:
-				if( digitalRead( playersStruct[i].bottomPin) == HIGH ) {
-					playersStruct[i].state = finished;
-				}
-				break;
-			case finished:
-				// Not really sure if we need this one
-				break;
-		}
-	}
 }
 
 void setRaceState() {
@@ -151,8 +82,8 @@ void setRaceState() {
 	switch( raceState ) {
 		case initiating:
 			allPlayersSet = true;
-			for( int i = 0; i < playerStructCount; i++) {
-				if( playersStruct[i].state != set ) {
+			for( int i = 0; i < playerCount; i++) {
+				if( players[i]->isOnMark() == false ) {
 					allPlayersSet = false;
 					break;
 				}
@@ -166,8 +97,8 @@ void setRaceState() {
 				digitalWrite( COUNTDOWN_OUT, HIGH );
 				raceState = countDown;		
 			} else {
-				for( int i = 0; i < playerStructCount; i++) {
-					if( playersStruct[i].state != set ) {
+				for( int i = 0; i < playerCount; i++) {
+					if( players[i]->isOnMark() == false ) {
 						raceState = initiating;
 						break;
 					}
@@ -178,10 +109,10 @@ void setRaceState() {
 			if( digitalRead( BEGIN_IN ) == HIGH ) {
 				raceState = begun;
 			} else {
-				for( int i = 0; i < playerStructCount; i++) {
-					if( playersStruct[i].state != set ) {
+				for( int i = 0; i < playerCount; i++) {
+					if( players[i]->isOnMark() == false ) {
 						raceState = falseStart;
-						digitalWrite( playersStruct[i].outPin, HIGH );
+						players[i]->setOut(HIGH);
 						break;
 					}
 				}
@@ -195,13 +126,13 @@ void setRaceState() {
 			break;	
 		case begun:
 			finishedCount = 0;
-			for( int i = 0; i < playerStructCount; i++) {
-				if( playersStruct[i].state == finished ) {
-					digitalWrite( playersStruct[i].outPin, HIGH);
+			for( int i = 0; i < playerCount; i++) {
+				if( players[i]->isFinished() ) {
+					players[i]->setOut(HIGH);
 					finishedCount += 1;
 				}				
 			}
-			if( finishedCount == playerStructCount ) {
+			if( finishedCount == playerCount ) {
 				raceState = complete;
 			}
 			break;
@@ -215,31 +146,7 @@ void setRaceState() {
 }
 
 void debug(long interval) {
-	for( int i = 0; i < playerStructCount; i++) {
-		if( playersStruct[i].state != playersStruct[i].lastState ) {
-			Serial.print("Player ");
-			Serial.print(i);
-			Serial.print(" ");
-			switch(  playersStruct[i].state ) {
-				case offmark:
-					Serial.println("offmark");
-					break;
-				case set:
-					Serial.println("set");
-					break;
-				case started:
-					Serial.println("started");
-					break;
-				case halfway:
-					Serial.println("halfway");
-					break;
-				case finished:
-					Serial.println("finished");
-					break;
-			}
-		}
-		playersStruct[i].lastState = playersStruct[i].state; 
-	}
+	
 	
 	if( lastRaceState != raceState ) {
 		switch( raceState ) {

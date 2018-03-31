@@ -31,6 +31,7 @@ Player::Player(int top, int bottom, int out, int up, int down ) {
 void Player::updateState( bool raceBegun ) {
 		switch( state ) {
 		case offmark:
+			//Turn off motors
 			if( digitalRead(bottomStopPin) == HIGH ) {	
 				state = onmark;
 			}
@@ -45,6 +46,7 @@ void Player::updateState( bool raceBegun ) {
 			}			
 			break;			
 		case started:
+			//Turn on motors
 			if( digitalRead(topStopPin) == HIGH ) {
 				state = halfway;
 			}
@@ -55,13 +57,30 @@ void Player::updateState( bool raceBegun ) {
 			}
 			break;
 		case finished:
-			// Just a place holder... players are reset externally
+			//Turn off motors
 			break;
 	}
 }
 
-bool Player::onMark() {
+const char* Player::getState() {
+	return stateNames[state];
+}
+
+bool Player::isOnMark() {
 	return state == onmark;
+}
+
+bool Player::isFinished() {
+	return state == finished;
+}
+
+void Player::setOut(bool value) {
+	digitalWrite(outPin, value);
+}
+
+void Player::reset() {
+	state = offmark;
+	digitalWrite(outPin, LOW);
 }
 
 

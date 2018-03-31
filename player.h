@@ -11,13 +11,19 @@ class Player {
 			finished
 		};
 
+		const char* stateNames[5] = {"offmark","onmark","started","halfway","finished"};
+
 		Player();
 		Player(int top, int bottom, int out, int up, int down );
 		
 		void updateState( bool raceBegun );
-		bool onMark();
-		
 
+		const char* getState();
+		bool isOnMark();
+		bool isFinished();
+		void setOut(bool value);
+		void reset();
+		
 	private:
 		int topStopPin;
 		int bottomStopPin;
