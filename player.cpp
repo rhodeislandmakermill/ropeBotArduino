@@ -28,7 +28,7 @@ Player::Player(int top, int bottom, int out, int up, int down ) {
 	state = offmark;
 }
 
-void Player::updateState( bool raceBegun ) {
+void Player::updateState() {
 		switch( state ) {
 		case offmark:
 			//Turn off motors
@@ -38,11 +38,7 @@ void Player::updateState( bool raceBegun ) {
 			break;
 		case onmark:
 			if( digitalRead(bottomStopPin) == LOW ) {
-				if( raceBegun == false ) {
-					state = offmark;	
-				} else {
-					state = started;
-				}
+				state = started;
 			}			
 			break;			
 		case started:

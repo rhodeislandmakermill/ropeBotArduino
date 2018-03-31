@@ -56,7 +56,7 @@ void loop() {
 	}
 	
 	for( int i = 0; i < playerCount; i++) {
-		players[i]->updateState( raceBegun );
+		players[i]->updateState();
 	}
 	
 	setRaceState();
