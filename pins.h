@@ -8,7 +8,7 @@ const int PLAYER_1_TOP = 17;
 const int PLAYER_1_BOTTOM = 18;
 
 //Start button
-const int START_BUTTON = 16;
+const int RESET_BUTTON = 16;
 
 //Player buttons
 const int PLAYER_0_UP = 10;
@@ -27,7 +27,7 @@ const int PWMB = 2;
 
 //Raspberry Pi pins
 const int BEGIN_IN = 53;
-const int COUNTDOWN_OUT = 51;
+const int PLAYERSREADY_OUT = 51;
 const int PLAYER_0_OUT = 49;
 const int PLAYER_1_OUT = 47;
 

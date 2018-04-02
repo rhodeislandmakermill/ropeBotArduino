@@ -16,8 +16,7 @@ Player* players[playerCount];
 
 enum RaceState {
 	initiating,
-	playersSet,
-	countDown,
+	playersReady,
 	falseStart,
 	begun,
 	complete
@@ -30,17 +29,17 @@ void setup() {
 	players[0] = new Player(PLAYER_0_TOP, PLAYER_0_BOTTOM, PLAYER_0_OUT, PLAYER_0_UP, PLAYER_0_DOWN );
 	players[1] = new Player(PLAYER_1_TOP, PLAYER_1_BOTTOM, PLAYER_1_OUT, PLAYER_1_UP, PLAYER_1_DOWN );
 	
-	pinMode( START_BUTTON, INPUT );
-	pinMode( COUNTDOWN_OUT, OUTPUT );
+	pinMode( RESET_BUTTON, INPUT );
+	pinMode( PLAYERSREADY_OUT, OUTPUT );
 	pinMode( BEGIN_IN, INPUT );
 	
 	startTime = millis();
 	Serial.begin(9600);
 
 	for(int i = 0; i < 5; i++) {
-		digitalWrite( COUNTDOWN_OUT, HIGH );
+		digitalWrite( PLAYERSREADY_OUT, HIGH );
 		delay(20);
-		digitalWrite( COUNTDOWN_OUT, LOW );
+		digitalWrite( PLAYERSREADY_OUT, LOW );
 		delay(300);
 	}
 
@@ -51,7 +50,7 @@ void loop() {
 
 	//Update player state
 	bool raceBegun = true;
-	if( raceState == initiating || raceState == playersSet ) {
+	if( raceState == initiating || raceState == playersReady ) {
 		raceBegun = false;
 	}
 	
@@ -59,55 +58,44 @@ void loop() {
 		players[i]->updateState();
 	}
 	
-	setRaceState();
+	updateRaceState();
 	debug(500);
 }
 
 void resetRace() {
 	//RESET PLAYERS
-	for( int i = 0; i < playerCount; i++) {
+	for( int i = 0; i < playerCount; i++) {  
 		players[i]->reset();
 	}
 
 	//RESET RACE
-	digitalWrite( COUNTDOWN_OUT, LOW);
+	digitalWrite( PLAYERSREADY_OUT, LOW);
 	raceState = initiating;
-	lastRaceState = raceState;
 }
 
-void setRaceState() {
-	bool allPlayersSet;
+void updateRaceState() {
+	bool allplayersReady;
 	int finishedCount;
 	
 	switch( raceState ) {
 		case initiating:
-			allPlayersSet = true;
+			//Move all players down until on mark
+			allplayersReady = true;
 			for( int i = 0; i < playerCount; i++) {
 				if( players[i]->isOnMark() == false ) {
-					allPlayersSet = false;
+					allplayersReady = false;
 					break;
 				}
 			}
-			if( allPlayersSet ) {
-				raceState = playersSet;
+			if( allplayersReady ) {
+				raceState = playersReady;
+				digitalWrite( PLAYERSREADY_OUT, HIGH );
 			}
 			break;
-		case playersSet:	
-			if( digitalRead( START_BUTTON ) == HIGH ) {
-				digitalWrite( COUNTDOWN_OUT, HIGH );
-				raceState = countDown;		
-			} else {
-				for( int i = 0; i < playerCount; i++) {
-					if( players[i]->isOnMark() == false ) {
-						raceState = initiating;
-						break;
-					}
-				}				
-			}
-			break;
-		case countDown:
+		case playersReady:
 			if( digitalRead( BEGIN_IN ) == HIGH ) {
 				raceState = begun;
+				digitalWrite( PLAYERSREADY_OUT, LOW );
 			} else {
 				for( int i = 0; i < playerCount; i++) {
 					if( players[i]->isOnMark() == false ) {
@@ -122,7 +110,6 @@ void setRaceState() {
 			//TODO: Disable motors
 			delay(2000);
 			resetRace();
-			raceState = initiating;
 			break;	
 		case begun:
 			finishedCount = 0;
@@ -137,27 +124,21 @@ void setRaceState() {
 			}
 			break;
 		case complete:
-			if( digitalRead( START_BUTTON ) == HIGH ) {
+			if( digitalRead( RESET_BUTTON ) == HIGH ) {
 				resetRace();
-				raceState = initiating;
 			}
 			break;
 	}
 }
 
 void debug(long interval) {
-	
-	
 	if( lastRaceState != raceState ) {
 		switch( raceState ) {
 			case initiating:
 				Serial.println("Initiating");
 				break;
-			case playersSet:
+			case playersReady:
 				Serial.println("Players set");
-				break;
-			case countDown:
-				Serial.println("Count down");
 				break;
 			case falseStart:
 				Serial.println("False start");
