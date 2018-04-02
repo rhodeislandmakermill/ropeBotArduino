@@ -1,6 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <SparkFun_TB6612.h>
+
 class Player {
 	public:
 		enum PlayerState {
@@ -14,7 +16,7 @@ class Player {
 		const char* stateNames[5] = {"offmark","onmark","started","halfway","finished"};
 
 		Player();
-		Player(int top, int bottom, int out, int up, int down );
+		Player(int top, int bottom, int out, int up, int down, Motor* motor);
 		
 		void updateState();
 
@@ -30,7 +32,11 @@ class Player {
 		int outPin;
 		int upButtonPin;
 		int downButtonPin;
+
+		Motor* motor;
+		
 		PlayerState state;
+		
 
 		void initializePins();
 };

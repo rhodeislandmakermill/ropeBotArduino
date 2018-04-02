@@ -10,9 +10,13 @@
 
 #include "pins.h"
 #include "player.h"
+#include <SparkFun_TB6612.h>
 
 const int playerCount = 2;
 Player* players[playerCount];
+
+Motor motor1 = Motor( AIN1, AIN2, PWMA, 1, STBY );
+Motor motor2 = Motor( BIN1, BIN2, PWMB, 1, STBY );
 
 enum RaceState {
 	initiating,
@@ -25,10 +29,9 @@ enum RaceState {
 long startTime;
 
 void setup() {
+	players[0] = new Player(PLAYER_0_TOP, PLAYER_0_BOTTOM, PLAYER_0_OUT, PLAYER_0_UP, PLAYER_0_DOWN, &motor1 );
+	players[1] = new Player(PLAYER_1_TOP, PLAYER_1_BOTTOM, PLAYER_1_OUT, PLAYER_1_UP, PLAYER_1_DOWN, &motor2 );
 
-	players[0] = new Player(PLAYER_0_TOP, PLAYER_0_BOTTOM, PLAYER_0_OUT, PLAYER_0_UP, PLAYER_0_DOWN );
-	players[1] = new Player(PLAYER_1_TOP, PLAYER_1_BOTTOM, PLAYER_1_OUT, PLAYER_1_UP, PLAYER_1_DOWN );
-	
 	pinMode( RESET_BUTTON, INPUT );
 	pinMode( PLAYERSREADY_OUT, OUTPUT );
 	pinMode( BEGIN_IN, INPUT );
@@ -93,6 +96,7 @@ void updateRaceState() {
 			}
 			break;
 		case playersReady:
+			//Enable motors
 			if( digitalRead( BEGIN_IN ) == HIGH ) {
 				raceState = begun;
 				digitalWrite( PLAYERSREADY_OUT, LOW );
@@ -107,7 +111,7 @@ void updateRaceState() {
 			}			
 			break;
 		case falseStart:
-			//TODO: Disable motors
+			//Disable motors
 			delay(2000);
 			resetRace();
 			break;	
@@ -124,6 +128,7 @@ void updateRaceState() {
 			}
 			break;
 		case complete:
+			//Disable motors
 			if( digitalRead( RESET_BUTTON ) == HIGH ) {
 				resetRace();
 			}

@@ -13,13 +13,15 @@ Player::Player() {
 	state = offmark;
 }
 
-Player::Player(int top, int bottom, int out, int up, int down ) {
+Player::Player(int top, int bottom, int out, int up, int down, Motor* theMotor ) {
 	//Set pins variables
 	topStopPin = top;
 	bottomStopPin = bottom;
 	outPin = out;
 	upButtonPin = up;
 	downButtonPin = down;
+
+	motor = theMotor;
 
 	//Initialize pin mode
 	initializePins();
