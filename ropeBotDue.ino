@@ -12,6 +12,7 @@
 #include "player.h"
 #include <SparkFun_TB6612.h>
 
+
 const int playerCount = 2;
 Player* players[playerCount];
 
@@ -50,19 +51,14 @@ void setup() {
 }
 
 void loop() {
-
 	//Update player state
-	bool raceBegun = true;
-	if( raceState == initiating || raceState == playersReady ) {
-		raceBegun = false;
-	}
-	
 	for( int i = 0; i < playerCount; i++) {
 		players[i]->updateState();
 	}
 	
 	updateRaceState();
-	debug(500);
+	
+	debug();
 }
 
 void resetRace() {
@@ -74,6 +70,12 @@ void resetRace() {
 	//RESET RACE
 	digitalWrite( PLAYERSREADY_OUT, LOW);
 	raceState = initiating;
+}
+
+void setControls(bool enabled) {
+	for( int i = 0; i < playerCount; i++) {
+		players[i]->setControls(enabled);
+	}
 }
 
 void updateRaceState() {
@@ -93,6 +95,7 @@ void updateRaceState() {
 			if( allplayersReady ) {
 				raceState = playersReady;
 				digitalWrite( PLAYERSREADY_OUT, HIGH );
+				setControls( true );
 			}
 			break;
 		case playersReady:
@@ -111,8 +114,11 @@ void updateRaceState() {
 			}			
 			break;
 		case falseStart:
-			//Disable motors
-			delay(2000);
+			for( int i = 0; i < playerCount; i++) {
+				 players[i]->setControls(false);
+				 players[i]->stopMotors();
+			}
+			delay(3000);
 			resetRace();
 			break;	
 		case begun:
@@ -136,7 +142,7 @@ void updateRaceState() {
 	}
 }
 
-void debug(long interval) {
+void debug() {
 	if( lastRaceState != raceState ) {
 		switch( raceState ) {
 			case initiating:

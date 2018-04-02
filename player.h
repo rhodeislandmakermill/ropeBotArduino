@@ -24,21 +24,30 @@ class Player {
 		bool isOnMark();
 		bool isFinished();
 		void setOut(bool value);
+		void setControls(bool enabled);
+		void stopMotors();
 		void reset();
-		
+		void upPressed();
+		void downPressed();
+
 	private:
 		int topStopPin;
 		int bottomStopPin;
 		int outPin;
 		int upButtonPin;
 		int downButtonPin;
+		int currentSpeed;
 
 		Motor* motor;
 		
 		PlayerState state;
+		bool controlsEnabled;
+		bool motorsEnabled;
 		
 
 		void initializePins();
+		void move(int newSpeed);
+		void move();
 };
 
 #endif

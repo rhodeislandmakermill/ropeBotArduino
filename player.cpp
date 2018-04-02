@@ -1,6 +1,8 @@
 #include "player.h"
 #include "Arduino.h"
 
+#define DEFAULT_SPEED 128
+
 Player::Player() {
 	//Set pins variables
 	topStopPin = -1;
@@ -8,6 +10,7 @@ Player::Player() {
 	outPin = -1;
 	upButtonPin = -1;
 	downButtonPin = -1;
+	currentSpeed = 0;
 
 	//Default player to offmark state
 	state = offmark;
@@ -20,7 +23,7 @@ Player::Player(int top, int bottom, int out, int up, int down, Motor* theMotor )
 	outPin = out;
 	upButtonPin = up;
 	downButtonPin = down;
-
+	currentSpeed = 0;
 	motor = theMotor;
 
 	//Initialize pin mode
@@ -28,9 +31,22 @@ Player::Player(int top, int bottom, int out, int up, int down, Motor* theMotor )
 
 	//Default player to offmark state
 	state = offmark;
+	controlsEnabled = false;
 }
 
 void Player::updateState() {
+
+		if( controlsEnabled ) {
+			if( digitalRead( upButtonPin ) == HIGH ) {
+				upPressed();
+			}
+			if( digitalRead( downButtonPin ) == HIGH ) {
+				downPressed();
+			}
+		}
+		
+	    move();
+	    
 		switch( state ) {
 		case offmark:
 			//Turn off motors
@@ -76,9 +92,27 @@ void Player::setOut(bool value) {
 	digitalWrite(outPin, value);
 }
 
+void Player::setControls(bool enabled) {
+	controlsEnabled = enabled;
+}
+
+void Player::stopMotors() {
+	motor->brake();
+}
+
 void Player::reset() {
-	state = offmark;
+	setControls(false);
+	state = offmark;	
 	digitalWrite(outPin, LOW);
+	move(-DEFAULT_SPEED / 2);
+}
+
+void Player::upPressed() {
+	currentSpeed = DEFAULT_SPEED;
+}
+
+void Player::downPressed() {
+	currentSpeed = -DEFAULT_SPEED;
 }
 
 
@@ -90,5 +124,24 @@ void Player::initializePins() {
 	pinMode( outPin, OUTPUT);
 	pinMode( upButtonPin, INPUT );
 	pinMode( downButtonPin, INPUT );
+}
+
+void Player::move(int newSpeed) {
+	currentSpeed = newSpeed;
+	move();
+}
+
+void Player::move() {
+	if( digitalRead(topStopPin) == HIGH && currentSpeed > 0 ) {
+		motor->brake();
+		currentSpeed = 0;
+	} else if( digitalRead(bottomStopPin) == HIGH && currentSpeed < 0) {
+		motor->brake();
+		currentSpeed = 0;
+	} else if( currentSpeed != 0 ) {
+		motor->drive(currentSpeed);
+	} else {
+		motor->brake();
+	}	
 }
 
