@@ -110,8 +110,12 @@ void Player::stopMotors() {
 
 void Player::reset() {
 	setControls(false);
+	setOut(false);
 	state = offmark;	
-	digitalWrite(outPin, LOW);	
+	
+	if( digitalRead(topStopPin) == LOW ) {
+		motor->drive( 64, 750 );
+	}	
 	move(-DEFAULT_SPEED / 2);
 }
 

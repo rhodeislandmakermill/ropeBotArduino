@@ -91,14 +91,14 @@ void loop() {
 }
 
 void resetRace() {
+	//RESET RACE
+	digitalWrite( PLAYERSREADY_OUT, LOW);
+	raceState = initiating;
+
 	//RESET PLAYERS
 	for( int i = 0; i < playerCount; i++) {  
 		players[i]->reset();
 	}
-
-	//RESET RACE
-	digitalWrite( PLAYERSREADY_OUT, LOW);
-	raceState = initiating;
 }
 
 void setControls(bool enabled) {
