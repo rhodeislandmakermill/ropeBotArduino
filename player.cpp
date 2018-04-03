@@ -31,23 +31,24 @@ Player::Player(int top, int bottom, int out, int up, int down, Motor* theMotor )
 
 	//Default player to offmark state
 	state = offmark;
+	previousState = finished;
 	controlsEnabled = false;
 }
 
 void Player::updateState() {
 
-		if( controlsEnabled ) {
-			if( digitalRead( upButtonPin ) == HIGH ) {
-				upPressed();
-			}
-			if( digitalRead( downButtonPin ) == HIGH ) {
-				downPressed();
-			}
+	if( controlsEnabled ) {
+		if( digitalRead( upButtonPin ) == HIGH ) {
+			upPressed();
 		}
-		
-	    move();
-	    
-		switch( state ) {
+		if( digitalRead( downButtonPin ) == HIGH ) {
+			downPressed();
+		}
+	}
+	
+    move();
+    
+	switch( state ) {
 		case offmark:
 			//Turn off motors
 			if( digitalRead(bottomStopPin) == HIGH ) {	
@@ -61,7 +62,9 @@ void Player::updateState() {
 			break;			
 		case started:
 			//Turn on motors
-			if( digitalRead(topStopPin) == HIGH ) {
+			if( digitalRead(bottomStopPin) == HIGH ) {
+				state = onmark;
+			} else if( digitalRead(topStopPin) == HIGH ) {
 				state = halfway;
 			}
 			break;
@@ -73,6 +76,11 @@ void Player::updateState() {
 		case finished:
 			//Turn off motors
 			break;
+	}
+	
+	if( state != previousState ) {
+//		Serial.println(getState());
+		previousState = state;
 	}
 }
 
@@ -103,7 +111,7 @@ void Player::stopMotors() {
 void Player::reset() {
 	setControls(false);
 	state = offmark;	
-	digitalWrite(outPin, LOW);
+	digitalWrite(outPin, LOW);	
 	move(-DEFAULT_SPEED / 2);
 }
 

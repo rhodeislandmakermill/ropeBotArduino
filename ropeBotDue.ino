@@ -113,7 +113,6 @@ void updateRaceState() {
 	
 	switch( raceState ) {
 		case initiating:
-			//Move all players down until on mark
 			allplayersReady = true;
 			for( int i = 0; i < playerCount; i++) {
 				if( players[i]->isOnMark() == false ) {

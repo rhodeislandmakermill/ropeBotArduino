@@ -40,7 +40,7 @@ class Player {
 
 		Motor* motor;
 		
-		PlayerState state;
+		PlayerState state, previousState;
 		bool controlsEnabled;
 		bool motorsEnabled;
 		
