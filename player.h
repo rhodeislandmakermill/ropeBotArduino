@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <SparkFun_TB6612.h>
+#include <Bounce2.h>
 
 const int DEBOUNCE_TIME = 25;
 const int HIT_RESET_TIME = 1000;
@@ -49,6 +50,8 @@ class Player {
 		bool controlsEnabled;
 		int upHits;
 		int downHits;
+		Bounce up;
+		Bounce down;
 		
 		struct Timer {
 			unsigned long start;

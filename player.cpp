@@ -131,6 +131,14 @@ void Player::initialize(bool pinsSet) {
 	hitTimer.start = millis();
 	hitTimer.duration = HIT_RESET_TIME;
 
+	//Debounce objects for player controllers
+	up = Bounce();
+	up.attach(upButtonPin);
+	up.interval(DEBOUNCE_TIME);
+	down = Bounce();
+	down.attach(upButtonPin);
+	down.interval(DEBOUNCE_TIME);	
+
 	//State
 	state = offmark;
 	previousState = finished;
