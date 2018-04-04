@@ -28,16 +28,36 @@ Player::Player(int top, int bottom, int out, int up, int down, Motor* theMotor )
 }
 
 void Player::updateState() {
+	up.update();
+	down.update();
 
 	if( controlsEnabled ) {
-		if( digitalRead( upButtonPin ) == HIGH ) {
-			currentSpeed = DEFAULT_SPEED;
+		if( up.rose() ) {
+			upHits++;
 		}
-		if( digitalRead( downButtonPin ) == HIGH ) {
-			currentSpeed = -DEFAULT_SPEED;
+		if( down.rose() ) {
+			downHits++;
+		}
+
+		//Update the speed with the current number of hits
+		if( millis() - hitTimer.start > hitTimer.duration ) {
+			currentSpeed = (currentSpeed * FRICTION) / 100;
+			currentSpeed += upHits * ACCELERATION_FACTOR;
+			currentSpeed -= downHits * ACCELERATION_FACTOR;
+
+			if( currentSpeed > 255 ) {
+				currentSpeed = 255;
+			}
+			if( currentSpeed < -255 ) {
+				currentSpeed = -255;
+			}
+			
+			upHits = 0;
+			downHits = 0;
+			hitTimer.start = millis();
 		}
 	}
-	
+
     move();
     
 	switch( state ) {
@@ -114,6 +134,9 @@ void Player::reset() {
 // PRIVATE FUNCTIONS
 
 void Player::initialize(bool pinsSet) {
+	//ID
+	ID = "";
+	
 	//Pins
 	if( pinsSet ) {
 		pinMode( topStopPin, INPUT);
@@ -123,6 +146,15 @@ void Player::initialize(bool pinsSet) {
 		pinMode( downButtonPin, INPUT );
 	}
 
+	//Debounce objects for player controllers
+	up = Bounce();
+	up.attach(upButtonPin);
+	up.interval(DEBOUNCE_TIME);
+	
+	down = Bounce();
+	down.attach(downButtonPin);
+	down.interval(DEBOUNCE_TIME);	
+
 	//Motor
 	currentSpeed = 0;
 	controlsEnabled = false;
@@ -131,13 +163,7 @@ void Player::initialize(bool pinsSet) {
 	hitTimer.start = millis();
 	hitTimer.duration = HIT_RESET_TIME;
 
-	//Debounce objects for player controllers
-	up = Bounce();
-	up.attach(upButtonPin);
-	up.interval(DEBOUNCE_TIME);
-	down = Bounce();
-	down.attach(upButtonPin);
-	down.interval(DEBOUNCE_TIME);	
+
 
 	//State
 	state = offmark;

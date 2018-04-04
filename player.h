@@ -36,6 +36,8 @@ class Player {
 		void upPressed();
 		void downPressed();
 
+		String ID;
+
 	private:
 		//Pins
 		int topStopPin;
