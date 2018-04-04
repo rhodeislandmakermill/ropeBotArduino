@@ -2,6 +2,12 @@
 #define PLAYER_H
 
 #include <SparkFun_TB6612.h>
+#include <Bounce2.h>
+
+const int DEBOUNCE_TIME = 25;
+const int HIT_RESET_TIME = 1000;
+const int ACCELERATION_FACTOR = 10;
+const int FRICTION = 70;
 
 class Player {
 	public:
@@ -30,6 +36,8 @@ class Player {
 		void upPressed();
 		void downPressed();
 
+		String ID;
+
 	private:
 		//Pins
 		int topStopPin;
@@ -38,14 +46,23 @@ class Player {
 		int upButtonPin;
 		int downButtonPin;
 
-		//Motor
+		//Motor and controls
 		Motor* motor;	
 		int currentSpeed;
 		bool controlsEnabled;
+		int upHits;
+		int downHits;
+		Bounce up;
+		Bounce down;
+		
+		struct Timer {
+			unsigned long start;
+			unsigned long duration;
+		} hitTimer;
 
 		//State
 		PlayerState state, previousState;
-		
+
 		void initialize(bool pinsSet = true);
 		void move(int newSpeed);
 		void move();

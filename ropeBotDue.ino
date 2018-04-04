@@ -32,6 +32,9 @@ void setup() {
 	players[0] = new Player(PLAYER_0_TOP, PLAYER_0_BOTTOM, PLAYER_0_OUT, PLAYER_0_UP, PLAYER_0_DOWN, &motor1 );
 	players[1] = new Player(PLAYER_1_TOP, PLAYER_1_BOTTOM, PLAYER_1_OUT, PLAYER_1_UP, PLAYER_1_DOWN, &motor2 );
 
+	players[0]->ID = "Zero";
+	players[1]->ID = "One";
+
 	pinMode( RESET_BUTTON, INPUT );
 	pinMode( PLAYERSREADY_OUT, OUTPUT );
 	pinMode( BEGIN_IN, INPUT );
