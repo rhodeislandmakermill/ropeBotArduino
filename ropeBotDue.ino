@@ -12,16 +12,6 @@
 #include "player.h"
 #include <SparkFun_TB6612.h>
 
-struct Timer {
-	unsigned long start;
-	unsigned long duration;
-} loopTimer, outputTimer;
-
-unsigned long totalTime;
-unsigned long averageTime;
-unsigned long timerCount;
-
-
 const int playerCount = 2;
 Player* players[playerCount];
 
@@ -47,26 +37,23 @@ void setup() {
 	pinMode( BEGIN_IN, INPUT );
 	
 	startTime = millis();
-	Serial.begin(9600);
-
-	for(int i = 0; i < 5; i++) {
-		digitalWrite( PLAYERSREADY_OUT, HIGH );
-		delay(20);
+	
+    digitalWrite( PLAYERSREADY_OUT, HIGH );
+	delay(500);
+	for(int i = 0; i < 4; i++) {
 		digitalWrite( PLAYERSREADY_OUT, LOW );
-		delay(300);
+		delay(200);
+		digitalWrite( PLAYERSREADY_OUT, HIGH );
+		delay(100);
 	}
-
+	
+	resetRace();
+	
+	Serial.begin(9600);
 	Serial.println("Start up");
-
-	totalTime = 0;
-	timerCount = 0;
-
-	outputTimer.start = millis();
-	outputTimer.duration = 2000;
 }
 
 void loop() {
-//	loopTimer.start = micros();
 	//Update player state
 	for( int i = 0; i < playerCount; i++) {
 		players[i]->updateState();
@@ -75,19 +62,6 @@ void loop() {
 	updateRaceState();
 	
 	debug();
-	
-//	loopTimer.duration = micros() - loopTimer.start;
-//	timerCount++;
-//	totalTime += loopTimer.duration;
-//	averageTime = totalTime / timerCount;
-//
-//	if( millis() - outputTimer.start > outputTimer.duration ) {
-//		Serial.print("Count: " );
-//		Serial.print(timerCount);
-//		Serial.print("  Average: " );
-//		Serial.println(averageTime);
-//		outputTimer.start = millis();
-//	}
 }
 
 void resetRace() {
