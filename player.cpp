@@ -31,10 +31,10 @@ void Player::updateState() {
 
 	if( controlsEnabled ) {
 		if( digitalRead( upButtonPin ) == HIGH ) {
-			upPressed();
+			currentSpeed = DEFAULT_SPEED;
 		}
 		if( digitalRead( downButtonPin ) == HIGH ) {
-			downPressed();
+			currentSpeed = -DEFAULT_SPEED;
 		}
 	}
 	
@@ -110,15 +110,6 @@ void Player::reset() {
 	}	
 	move(-DEFAULT_SPEED / 4);
 }
-
-void Player::upPressed() {
-	currentSpeed = DEFAULT_SPEED;
-}
-
-void Player::downPressed() {
-	currentSpeed = -DEFAULT_SPEED;
-}
-
 
 // PRIVATE FUNCTIONS
 
