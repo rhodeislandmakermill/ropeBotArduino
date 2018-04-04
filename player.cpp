@@ -1,7 +1,7 @@
 #include "player.h"
 #include "Arduino.h"
 
-#define DEFAULT_SPEED 128
+#define DEFAULT_SPEED 255
 
 Player::Player() {
 	//Set pins variables
@@ -10,10 +10,8 @@ Player::Player() {
 	outPin = -1;
 	upButtonPin = -1;
 	downButtonPin = -1;
-	currentSpeed = 0;
-
-	//Default player to offmark state
-	state = offmark;
+	
+	initialize(false);
 }
 
 Player::Player(int top, int bottom, int out, int up, int down, Motor* theMotor ) {
@@ -23,26 +21,20 @@ Player::Player(int top, int bottom, int out, int up, int down, Motor* theMotor )
 	outPin = out;
 	upButtonPin = up;
 	downButtonPin = down;
-	currentSpeed = 0;
+		
 	motor = theMotor;
 
-	//Initialize pin mode
-	initializePins();
-
-	//Default player to offmark state
-	state = offmark;
-	previousState = finished;
-	controlsEnabled = false;
+	initialize();
 }
 
 void Player::updateState() {
 
 	if( controlsEnabled ) {
 		if( digitalRead( upButtonPin ) == HIGH ) {
-			upPressed();
+			currentSpeed = DEFAULT_SPEED;
 		}
 		if( digitalRead( downButtonPin ) == HIGH ) {
-			downPressed();
+			currentSpeed = -DEFAULT_SPEED;
 		}
 	}
 	
@@ -114,28 +106,34 @@ void Player::reset() {
 	state = offmark;	
 	
 	if( digitalRead(topStopPin) == LOW ) {
-		motor->drive( 64, 750 );
+		motor->drive( DEFAULT_SPEED / 4, 750 );
 	}	
-	move(-DEFAULT_SPEED / 2);
+	move(-DEFAULT_SPEED / 4);
 }
-
-void Player::upPressed() {
-	currentSpeed = DEFAULT_SPEED;
-}
-
-void Player::downPressed() {
-	currentSpeed = -DEFAULT_SPEED;
-}
-
 
 // PRIVATE FUNCTIONS
 
-void Player::initializePins() {
-	pinMode( topStopPin, INPUT);
-	pinMode( bottomStopPin, INPUT);
-	pinMode( outPin, OUTPUT);
-	pinMode( upButtonPin, INPUT );
-	pinMode( downButtonPin, INPUT );
+void Player::initialize(bool pinsSet) {
+	//Pins
+	if( pinsSet ) {
+		pinMode( topStopPin, INPUT);
+		pinMode( bottomStopPin, INPUT);
+		pinMode( outPin, OUTPUT);
+		pinMode( upButtonPin, INPUT );
+		pinMode( downButtonPin, INPUT );
+	}
+
+	//Motor
+	currentSpeed = 0;
+	controlsEnabled = false;
+	upHits = 0;
+	downHits = 0;
+	hitTimer.start = millis();
+	hitTimer.duration = HIT_RESET_TIME;
+
+	//State
+	state = offmark;
+	previousState = finished;
 }
 
 void Player::move(int newSpeed) {

@@ -3,6 +3,11 @@
 
 #include <SparkFun_TB6612.h>
 
+const int DEBOUNCE_TIME = 25;
+const int HIT_RESET_TIME = 1000;
+const int ACCELERATION_FACTOR = 10;
+const int FRICTION = 70;
+
 class Player {
 	public:
 		enum PlayerState {
@@ -31,21 +36,29 @@ class Player {
 		void downPressed();
 
 	private:
+		//Pins
 		int topStopPin;
 		int bottomStopPin;
 		int outPin;
 		int upButtonPin;
 		int downButtonPin;
+
+		//Motor and controls
+		Motor* motor;	
 		int currentSpeed;
-
-		Motor* motor;
-		
-		PlayerState state, previousState;
 		bool controlsEnabled;
-		bool motorsEnabled;
+		int upHits;
+		int downHits;
 		
+		struct Timer {
+			unsigned long start;
+			unsigned long duration;
+		} hitTimer;
 
-		void initializePins();
+		//State
+		PlayerState state, previousState;
+		
+		void initialize(bool pinsSet = true);
 		void move(int newSpeed);
 		void move();
 };
