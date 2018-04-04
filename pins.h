@@ -1,6 +1,9 @@
 #ifndef PINS_H
 #define PINS_H
 
+//LEDS
+const int INDICATOR_LED = 2;
+
 //Race end stops
 const int PLAYER_0_TOP = 14;
 const int PLAYER_0_BOTTOM = 15;

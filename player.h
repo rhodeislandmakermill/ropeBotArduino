@@ -31,21 +31,22 @@ class Player {
 		void downPressed();
 
 	private:
+		//Pins
 		int topStopPin;
 		int bottomStopPin;
 		int outPin;
 		int upButtonPin;
 		int downButtonPin;
+
+		//Motor
+		Motor* motor;	
 		int currentSpeed;
-
-		Motor* motor;
-		
-		PlayerState state, previousState;
 		bool controlsEnabled;
-		bool motorsEnabled;
-		
 
-		void initializePins();
+		//State
+		PlayerState state, previousState;
+		
+		void initialize(bool pinsSet = true);
 		void move(int newSpeed);
 		void move();
 };
