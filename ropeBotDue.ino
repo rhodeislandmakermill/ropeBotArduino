@@ -57,11 +57,15 @@ void setup() {
 }
 
 void loop() {
+	if( digitalRead( RESET_BUTTON ) == HIGH ) {
+		resetRace();
+	}
+	
 	//Update player state
 	for( int i = 0; i < playerCount; i++) {
 		players[i]->update();
 	}
-	
+
 	updateRace();
 	
 	debug();
