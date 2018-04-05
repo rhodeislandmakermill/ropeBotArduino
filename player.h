@@ -24,7 +24,7 @@ class Player {
 		Player();
 		Player(int top, int bottom, int out, int up, int down, Motor* motor);
 		
-		void updateState();
+		void update();
 
 		const char* getState();
 		bool isOnMark();

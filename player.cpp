@@ -27,7 +27,7 @@ Player::Player(int top, int bottom, int out, int up, int down, Motor* theMotor )
 	initialize();
 }
 
-void Player::updateState() {
+void Player::update() {
 	up.update();
 	down.update();
 

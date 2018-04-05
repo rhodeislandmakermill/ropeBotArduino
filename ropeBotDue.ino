@@ -59,10 +59,10 @@ void setup() {
 void loop() {
 	//Update player state
 	for( int i = 0; i < playerCount; i++) {
-		players[i]->updateState();
+		players[i]->update();
 	}
 	
-	updateRaceState();
+	updateRace();
 	
 	debug();
 }
@@ -84,7 +84,7 @@ void setControls(bool enabled) {
 	}
 }
 
-void updateRaceState() {
+void updateRace() {
 	bool allplayersReady;
 	int finishedCount;
 	
