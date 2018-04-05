@@ -29,7 +29,7 @@ const int BIN2 = 3;
 const int PWMB = 2;
 
 //Raspberry Pi pins
-const int BEGIN_IN = 53;
+const int COUNTDOWNOVER_IN = 53;
 const int PLAYERSREADY_OUT = 51;
 const int PLAYER_0_OUT = 49;
 const int PLAYER_1_OUT = 47;

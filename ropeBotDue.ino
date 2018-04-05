@@ -15,8 +15,8 @@
 const int playerCount = 2;
 Player* players[playerCount];
 
-Motor motor1 = Motor( AIN1, AIN2, PWMA, 1, STBY );
-Motor motor2 = Motor( BIN1, BIN2, PWMB, 1, STBY );
+Motor motor0 = Motor( AIN1, AIN2, PWMA, 1, STBY );
+Motor motor1 = Motor( BIN1, BIN2, PWMB, 1, STBY );
 
 enum RaceState {
 	initiating,
@@ -29,15 +29,15 @@ enum RaceState {
 long startTime;
 
 void setup() {
-	players[0] = new Player(PLAYER_0_TOP, PLAYER_0_BOTTOM, PLAYER_0_OUT, PLAYER_0_UP, PLAYER_0_DOWN, &motor1 );
-	players[1] = new Player(PLAYER_1_TOP, PLAYER_1_BOTTOM, PLAYER_1_OUT, PLAYER_1_UP, PLAYER_1_DOWN, &motor2 );
+	players[0] = new Player(PLAYER_0_TOP, PLAYER_0_BOTTOM, PLAYER_0_OUT, PLAYER_0_UP, PLAYER_0_DOWN, &motor0 );
+	players[1] = new Player(PLAYER_1_TOP, PLAYER_1_BOTTOM, PLAYER_1_OUT, PLAYER_1_UP, PLAYER_1_DOWN, &motor1 );
 
 	players[0]->ID = "Zero";
 	players[1]->ID = "One";
 
 	pinMode( RESET_BUTTON, INPUT );
 	pinMode( PLAYERSREADY_OUT, OUTPUT );
-	pinMode( BEGIN_IN, INPUT );
+	pinMode( COUNTDOWNOVER_IN, INPUT );
 	
 	startTime = millis();
 	
@@ -105,7 +105,7 @@ void updateRaceState() {
 			break;
 		case playersReady:
 			//Enable motors
-			if( digitalRead( BEGIN_IN ) == HIGH ) {
+			if( digitalRead( COUNTDOWNOVER_IN ) == HIGH ) {
 				raceState = begun;
 				digitalWrite( PLAYERSREADY_OUT, LOW );
 			} else {
