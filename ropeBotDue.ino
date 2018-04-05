@@ -140,9 +140,8 @@ void updateRaceState() {
 			break;
 		case complete:
 			//Disable motors
-			if( digitalRead( RESET_BUTTON ) == HIGH ) {
-				resetRace();
-			}
+			delay(5000);
+			resetRace();
 			break;
 	}
 }
